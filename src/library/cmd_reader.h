@@ -118,22 +118,22 @@ namespace xlang::cmd
                 {
                     if (std::experimental::filesystem::is_regular_file(file))
                     {
-                        files.insert(file.path().string());
+                        files.insert(canonical(file.path()).string());
                     }
                 }
             };
 
             for (auto&& path : values(name))
             {
-                auto absolute = std::experimental::filesystem::absolute(path);
+                auto canonical = std::experimental::filesystem::canonical(path);
 
-                if (std::experimental::filesystem::is_directory(absolute))
+                if (std::experimental::filesystem::is_directory(canonical))
                 {
-                    add_directory(absolute);
+                    add_directory(canonical);
                 }
-                else if (std::experimental::filesystem::is_regular_file(absolute))
+                else if (std::experimental::filesystem::is_regular_file(canonical))
                 {
-                    files.insert(absolute.string());
+                    files.insert(canonical.string());
                 }
 #if XLANG_PLATFORM_WINDOWS
                 else if (path == "local")
@@ -154,7 +154,7 @@ namespace xlang::cmd
 
     private:
 
-        auto find(std::vector<option> const& options, std::string_view const& arg)
+        std::vector<option>::const_iterator find(std::vector<option> const& options, std::string_view const& arg)
         {
             for (auto current = options.begin(); current != options.end(); ++current)
             {
