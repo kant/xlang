@@ -7,6 +7,7 @@ namespace winrt::Component::Fast::implementation
     {
         FastClass() = default;
 
+        static void StaticMethod();
         hstring First();
         hstring Second();
         hstring Third();

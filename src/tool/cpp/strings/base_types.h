@@ -511,12 +511,3 @@ WINRT_EXPORT namespace winrt::Windows::Foundation::Collections
         }
     };
 }
-
-namespace winrt::impl
-{
-    inline void put_fast_abi(Windows::Foundation::IAsyncAction& object, void* ptr) noexcept
-    {
-        WINRT_ASSERT(!object);
-        *reinterpret_cast<void**>(&object) = ptr;
-    }
-}

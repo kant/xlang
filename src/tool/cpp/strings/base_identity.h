@@ -13,25 +13,16 @@ WINRT_EXPORT namespace winrt
     struct event_token;
 
     template <typename T>
-    struct fast_instance {};
-
-    template <typename T>
-    struct fast_factory;
+    struct fast_interface {};
 }
 
 namespace winrt::impl
 {
     template <typename T, typename = std::void_t<>>
-    struct is_fast_instance : std::false_type {};
+    struct is_fast_interface : std::false_type {};
 
     template <typename T>
-    struct is_fast_instance<fast_instance<T>> : std::true_type {};
-
-    template <typename T, typename = std::void_t<>>
-    struct is_fast_factory : std::false_type {};
-
-    template <typename T>
-    struct is_fast_factory<fast_factory<T>> : std::true_type {};
+    struct is_fast_interface<fast_interface<T>> : std::true_type {};
 
     template <typename T>
     constexpr bool is_guid_of(guid const& id) noexcept
@@ -482,16 +473,10 @@ namespace winrt::impl
         static constexpr guid value{ generate_guid(signature<T>::data) };
     };
 
-    template <typename T> struct guid_storage<fast_instance<T>>
+    template <typename T> struct guid_storage<fast_interface<T>>
     {
 #pragma warning(suppress: 4307)
-        static constexpr guid value{ generate_guid(combine("fast_instance(", to_array<char>(guid_of<T>()), ")")) };
-    };
-
-    template <typename T> struct guid_storage<fast_factory<T>>
-    {
-#pragma warning(suppress: 4307)
-        static constexpr guid value{ generate_guid(combine("fast_factory(", to_array<char>(guid_of<T>()), ")")) };
+        static constexpr guid value{ generate_guid(combine("fastabi(", to_array<char>(guid_of<T>()), ")")) };
     };
 
     constexpr size_t to_utf8_size(wchar_t const value) noexcept

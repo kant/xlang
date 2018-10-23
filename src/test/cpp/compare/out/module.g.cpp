@@ -6,6 +6,7 @@
 #include "Component.Edge.TwoClass.h"
 #include "Component.Edge.ZeroClass.h"
 #include "Component.Fast.FastClass.h"
+#include "Component.Fast.SlowClass.h"
 
 int32_t WINRT_CALL WINRT_CanUnloadNow() noexcept
 {
@@ -66,6 +67,11 @@ int32_t WINRT_CALL WINRT_GetActivationFactory(void* classId, void** factory) noe
         if (requal(name, L"Component.Fast.FastClass"))
         {
             *factory = winrt::detach_abi(winrt::make<winrt::Component::Fast::factory_implementation::FastClass>());
+            return 0;
+        }
+        if (requal(name, L"Component.Fast.SlowClass"))
+        {
+            *factory = winrt::detach_abi(winrt::make<winrt::Component::Fast::factory_implementation::SlowClass>());
             return 0;
         }
 

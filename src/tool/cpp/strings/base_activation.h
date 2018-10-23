@@ -228,12 +228,6 @@ namespace winrt::impl
             }
         }
 
-        template <typename F>
-        auto fast_call(F&& callback)
-        {
-            return callback(*reinterpret_cast<com_ref<Interface> const*>(&m_value.object));
-        }
-
         void lock() noexcept
         {
             {
@@ -336,30 +330,6 @@ namespace winrt::impl
         return factory_storage<Class, Interface>::factory.call(callback);
     }
 
-    template <typename Class, typename F>
-    auto fast_call(F&& callback)
-    {
-        return factory_storage<Class, fast_factory<Class>>::factory.fast_call(callback);
-    }
-
-    template <typename Class>
-    void fast_lock(Class const& value) noexcept
-    {
-        if (value)
-        {
-            factory_storage<Class, fast_factory<Class>>::factory.lock();
-        }
-    }
-
-    template <typename Class>
-    void fast_unlock(Class const& value) noexcept
-    {
-        if (value)
-        {
-            factory_storage<Class, fast_factory<Class>>::factory.unlock();
-        }
-    }
-
     template <typename Class, typename Interface = Windows::Foundation::IActivationFactory>
     auto try_get_activation_factory(hresult_error* exception = nullptr) noexcept
     {
@@ -385,8 +355,6 @@ namespace winrt::impl
 
 WINRT_EXPORT namespace winrt
 {
-    // TODO: put_abi and friends for fast_instance<T>
-
     namespace Windows::Foundation
     {
         struct IActivationFactory :

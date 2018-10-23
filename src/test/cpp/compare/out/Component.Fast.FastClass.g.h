@@ -25,7 +25,7 @@ namespace winrt::Component::Fast::implementation
 namespace winrt::Component::Fast::factory_implementation
 {
     template <typename D, typename T, typename... I>
-    struct WINRT_EBO FastClassT : implements<D, Windows::Foundation::IActivationFactory, I...>
+    struct WINRT_EBO FastClassT : implements<D, Windows::Foundation::IActivationFactory, Component::Fast::IFastClassStatics, I...>
     {
         using instance_type = Component::Fast::FastClass;
 
@@ -36,6 +36,10 @@ namespace winrt::Component::Fast::factory_implementation
         Windows::Foundation::IInspectable ActivateInstance() const
         {
             return make<T>();
+        }
+        void StaticMethod()
+        {
+            return T::StaticMethod();
         }
     };
 }

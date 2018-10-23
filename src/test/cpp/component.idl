@@ -1,5 +1,58 @@
 namespace Component
 {
+    namespace OneEnum
+    {
+        enum Signed
+        {
+            First = -1,
+            Second = 0,
+            Third = 1
+        };
+    }
+
+    namespace TwoEnum
+    {
+        enum Signed
+        {
+            First = -1,
+            Second = 0,
+            Third = 1
+        };
+
+        [flags]
+        enum Unsigned
+        {
+            First = 0,
+            Second = 1,
+            Third = 2
+        };
+    }
+
+    namespace ThreeEnum
+    {
+        enum Signed
+        {
+            First = -1,
+            Second = 0,
+            Third = 1
+        };
+
+        [flags]
+        enum Unsigned
+        {
+            First = 0,
+            Second = 1,
+            Third = 2
+        };
+
+        enum Another
+        {
+            First = -1,
+            Second = 0,
+            Third = 1
+        };
+    }
+
     namespace Edge
     {
         [default_interface]
@@ -66,15 +119,36 @@ namespace Component
             String Fourth();
         }
 
+        [exclusiveto(SlowClass)]
+        interface ISlowClass
+        {
+            String First();
+            String Second();
+        }
+
+        [exclusiveto(SlowClass)]
+        interface ISlowClass2
+        {
+            String Third();
+            String Fourth();
+        }
+
         interface INotExclusive
         {
             String NotExclusive();
         }
 
-        //[Windows.Foundation.Metadata.FastAbiAttribute]
+        runtimeclass SlowClass : [default] ISlowClass, ISlowClass2, INotExclusive
+        {
+            SlowClass();
+            static void StaticMethod();
+        }
+
+        [Windows.Foundation.Metadata.FastAbiAttribute]
         runtimeclass FastClass : [default] IFastClass, IFastClass2, INotExclusive
         {
             FastClass();
+            static void StaticMethod();
         }
     }
 }

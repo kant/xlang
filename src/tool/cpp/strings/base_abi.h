@@ -34,12 +34,6 @@ namespace winrt::impl
 
     using inspectable_abi = abi_t<Windows::Foundation::IInspectable>;
 
-    template <typename T>
-    struct abi<fast_instance<T>>
-    {
-        using type = inspectable_abi;
-    };
-
     struct WINRT_NOVTABLE IAgileObject : unknown_abi
     {
     };

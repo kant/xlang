@@ -5,8 +5,13 @@ namespace winrt::Component::Fast
 {
     struct IFastClass;
     struct IFastClass2;
+    struct IFastClassStatics;
     struct INotExclusive;
+    struct ISlowClass;
+    struct ISlowClass2;
+    struct ISlowClassStatics;
     struct FastClass;
+    struct SlowClass;
 }
 namespace winrt::impl
 {
@@ -18,11 +23,31 @@ namespace winrt::impl
     {
         using type = interface_category;
     };
+    template <> struct category<Component::Fast::IFastClassStatics>
+    {
+        using type = interface_category;
+    };
     template <> struct category<Component::Fast::INotExclusive>
     {
         using type = interface_category;
     };
+    template <> struct category<Component::Fast::ISlowClass>
+    {
+        using type = interface_category;
+    };
+    template <> struct category<Component::Fast::ISlowClass2>
+    {
+        using type = interface_category;
+    };
+    template <> struct category<Component::Fast::ISlowClassStatics>
+    {
+        using type = interface_category;
+    };
     template <> struct category<Component::Fast::FastClass>
+    {
+        using type = class_category;
+    };
+    template <> struct category<Component::Fast::SlowClass>
     {
         using type = class_category;
     };
@@ -34,13 +59,33 @@ namespace winrt::impl
     {
         static constexpr auto & value{ L"Component.Fast.IFastClass2" };
     };
+    template <> struct name<Component::Fast::IFastClassStatics>
+    {
+        static constexpr auto & value{ L"Component.Fast.IFastClassStatics" };
+    };
     template <> struct name<Component::Fast::INotExclusive>
     {
         static constexpr auto & value{ L"Component.Fast.INotExclusive" };
     };
+    template <> struct name<Component::Fast::ISlowClass>
+    {
+        static constexpr auto & value{ L"Component.Fast.ISlowClass" };
+    };
+    template <> struct name<Component::Fast::ISlowClass2>
+    {
+        static constexpr auto & value{ L"Component.Fast.ISlowClass2" };
+    };
+    template <> struct name<Component::Fast::ISlowClassStatics>
+    {
+        static constexpr auto & value{ L"Component.Fast.ISlowClassStatics" };
+    };
     template <> struct name<Component::Fast::FastClass>
     {
         static constexpr auto & value{ L"Component.Fast.FastClass" };
+    };
+    template <> struct name<Component::Fast::SlowClass>
+    {
+        static constexpr auto & value{ L"Component.Fast.SlowClass" };
     };
     template <> struct guid_storage<Component::Fast::IFastClass>
     {
@@ -50,13 +95,33 @@ namespace winrt::impl
     {
         static constexpr guid value{ 0xD966B113,0x3548,0x591C,{ 0xB9,0x06,0x70,0x65,0x79,0xC9,0x40,0xF5 } };
     };
+    template <> struct guid_storage<Component::Fast::IFastClassStatics>
+    {
+        static constexpr guid value{ 0xF0CC0643,0x4716,0x5880,{ 0xB8,0xDF,0x24,0x97,0x57,0x7C,0xDE,0xC4 } };
+    };
     template <> struct guid_storage<Component::Fast::INotExclusive>
     {
         static constexpr guid value{ 0x218F354D,0x8EAD,0x573F,{ 0xB1,0xE2,0xA9,0x00,0xE6,0x14,0x8D,0xD9 } };
     };
+    template <> struct guid_storage<Component::Fast::ISlowClass>
+    {
+        static constexpr guid value{ 0x28C3CF74,0xC30C,0x5957,{ 0x8C,0xD6,0xB8,0x78,0x9F,0x42,0x22,0xC2 } };
+    };
+    template <> struct guid_storage<Component::Fast::ISlowClass2>
+    {
+        static constexpr guid value{ 0x258FB196,0xDC8C,0x5282,{ 0xBB,0x44,0xAB,0x54,0xDB,0x83,0xF2,0xE1 } };
+    };
+    template <> struct guid_storage<Component::Fast::ISlowClassStatics>
+    {
+        static constexpr guid value{ 0xE47C3200,0xEC13,0x53DE,{ 0x83,0x2B,0x6C,0x45,0x6B,0xC1,0xC4,0x0B } };
+    };
     template <> struct default_interface<Component::Fast::FastClass>
     {
         using type = Component::Fast::IFastClass;
+    };
+    template <> struct default_interface<Component::Fast::SlowClass>
+    {
+        using type = Component::Fast::ISlowClass;
     };
     template <> struct abi<Component::Fast::IFastClass>
     {
@@ -74,11 +139,51 @@ namespace winrt::impl
             virtual int32_t WINRT_CALL Fourth(void**) noexcept = 0;
         };
     };
+    template <> struct abi<Component::Fast::IFastClassStatics>
+    {
+        struct type : inspectable_abi
+        {
+            virtual int32_t WINRT_CALL StaticMethod() noexcept = 0;
+        };
+    };
     template <> struct abi<Component::Fast::INotExclusive>
     {
         struct type : inspectable_abi
         {
             virtual int32_t WINRT_CALL NotExclusive(void**) noexcept = 0;
+        };
+    };
+    template <> struct abi<Component::Fast::ISlowClass>
+    {
+        struct type : inspectable_abi
+        {
+            virtual int32_t WINRT_CALL First(void**) noexcept = 0;
+            virtual int32_t WINRT_CALL Second(void**) noexcept = 0;
+        };
+    };
+    template <> struct abi<Component::Fast::ISlowClass2>
+    {
+        struct type : inspectable_abi
+        {
+            virtual int32_t WINRT_CALL Third(void**) noexcept = 0;
+            virtual int32_t WINRT_CALL Fourth(void**) noexcept = 0;
+        };
+    };
+    template <> struct abi<Component::Fast::ISlowClassStatics>
+    {
+        struct type : inspectable_abi
+        {
+            virtual int32_t WINRT_CALL StaticMethod() noexcept = 0;
+        };
+    };
+    template <> struct abi<fast_interface<Component::Fast::FastClass>>
+    {
+        struct type : inspectable_abi
+        {
+            virtual int32_t WINRT_CALL First(void**) noexcept = 0;
+            virtual int32_t WINRT_CALL Second(void**) noexcept = 0;
+            virtual int32_t WINRT_CALL Third(void**) noexcept = 0;
+            virtual int32_t WINRT_CALL Fourth(void**) noexcept = 0;
         };
     };
     template <typename D>
@@ -102,6 +207,15 @@ namespace winrt::impl
         template <typename D> using type = consume_Component_Fast_IFastClass2<D>;
     };
     template <typename D>
+    struct consume_Component_Fast_IFastClassStatics
+    {
+        void StaticMethod() const;
+    };
+    template <> struct consume<Component::Fast::IFastClassStatics>
+    {
+        template <typename D> using type = consume_Component_Fast_IFastClassStatics<D>;
+    };
+    template <typename D>
     struct consume_Component_Fast_INotExclusive
     {
         hstring NotExclusive() const;
@@ -109,5 +223,34 @@ namespace winrt::impl
     template <> struct consume<Component::Fast::INotExclusive>
     {
         template <typename D> using type = consume_Component_Fast_INotExclusive<D>;
+    };
+    template <typename D>
+    struct consume_Component_Fast_ISlowClass
+    {
+        hstring First() const;
+        hstring Second() const;
+    };
+    template <> struct consume<Component::Fast::ISlowClass>
+    {
+        template <typename D> using type = consume_Component_Fast_ISlowClass<D>;
+    };
+    template <typename D>
+    struct consume_Component_Fast_ISlowClass2
+    {
+        hstring Third() const;
+        hstring Fourth() const;
+    };
+    template <> struct consume<Component::Fast::ISlowClass2>
+    {
+        template <typename D> using type = consume_Component_Fast_ISlowClass2<D>;
+    };
+    template <typename D>
+    struct consume_Component_Fast_ISlowClassStatics
+    {
+        void StaticMethod() const;
+    };
+    template <> struct consume<Component::Fast::ISlowClassStatics>
+    {
+        template <typename D> using type = consume_Component_Fast_ISlowClassStatics<D>;
     };
 }

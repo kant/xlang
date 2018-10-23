@@ -579,5 +579,62 @@ namespace xlang
             filename += ".h";
             flush_to_file(filename);
         }
+
+        // template <auto F, typename List, typename... Args>
+        // void write_each2(std::string_view const& delimiter, List const& list, Args const&... args)
+        // {
+        //     bool first{ true };
+
+        //     for (auto&& item : list)
+        //     {
+        //         if (first)
+        //         {
+        //             first = false;
+        //         }
+        //         else
+        //         {
+        //             write(delimiter);
+        //         }
+
+        //         F(*this, item, args...);
+        //     }
+        // }
+
+        // template <auto F, typename List, typename... Args>
+        // void write_lines(List const& list, Args const&... args)
+        // {
+        //     std::size_t last_size = size();
+
+        //     for (auto&& item : list)
+        //     {
+        //         if (last_size != size())
+        //         {
+        //             last_size = size();
+        //             write('\n');
+        //         }
+
+        //         F(*this, item, args...);
+        //     }
+        // }
     };
+
+    // template <auto F, typename List, typename... Args>
+    // auto bind_lines(List const& list, Args const&... args)
+    // {
+    //     return [&](auto& writer)
+    //     {
+    //         std::size_t last_size = writer.size();
+
+    //         for (auto&& item : list)
+    //         {
+    //             if (last_size != writer.size())
+    //             {
+    //                 last_size = writer.size();
+    //                 writer.write('\n');
+    //             }
+
+    //             F(writer, item, args...);
+    //         }
+    //     };
+    // }
 }

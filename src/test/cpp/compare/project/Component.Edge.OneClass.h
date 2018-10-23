@@ -7,8 +7,8 @@ namespace winrt::Component::Edge::implementation
     {
         OneClass() = default;
 
-        OneClass(int32_t);
         static void StaticMethod(int32_t);
+        OneClass(int32_t);
         void Method(int32_t);
         int32_t First();
     };

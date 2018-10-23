@@ -159,10 +159,20 @@ namespace xlang::text
             return m_first.back();
         }
 
+        void pop_back()
+        {
+            m_first.pop_back();
+        }
+
+        auto size() const noexcept
+        {
+            return m_first.size() + m_second.size();
+        }
+
 #if defined(XLANG_DEBUG)
         bool debug_trace{};
 #endif
-        
+
     private:
 
         static constexpr uint32_t count_placeholders(std::string_view const& format) noexcept

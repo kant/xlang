@@ -12,6 +12,7 @@ namespace winrt::Component::Fast::implementation
         hstring Third(){return m_third;}
         hstring Fourth(){return m_fourth;}
         hstring NotExclusive(){return m_not_exclusive;}
+        static void StaticMethod() {}; 
 
         hstring m_first{L"First"};
         hstring m_second{L"Second"};

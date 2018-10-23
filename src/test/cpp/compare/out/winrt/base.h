@@ -722,25 +722,16 @@ WINRT_EXPORT namespace winrt
     struct event_token;
 
     template <typename T>
-    struct fast_instance {};
-
-    template <typename T>
-    struct fast_factory;
+    struct fast_interface {};
 }
 
 namespace winrt::impl
 {
     template <typename T, typename = std::void_t<>>
-    struct is_fast_instance : std::false_type {};
+    struct is_fast_interface : std::false_type {};
 
     template <typename T>
-    struct is_fast_instance<fast_instance<T>> : std::true_type {};
-
-    template <typename T, typename = std::void_t<>>
-    struct is_fast_factory : std::false_type {};
-
-    template <typename T>
-    struct is_fast_factory<fast_factory<T>> : std::true_type {};
+    struct is_fast_interface<fast_interface<T>> : std::true_type {};
 
     template <typename T>
     constexpr bool is_guid_of(guid const& id) noexcept
@@ -1191,16 +1182,10 @@ namespace winrt::impl
         static constexpr guid value{ generate_guid(signature<T>::data) };
     };
 
-    template <typename T> struct guid_storage<fast_instance<T>>
+    template <typename T> struct guid_storage<fast_interface<T>>
     {
 #pragma warning(suppress: 4307)
-        static constexpr guid value{ generate_guid(combine("fast_instance(", to_array<char>(guid_of<T>()), ")")) };
-    };
-
-    template <typename T> struct guid_storage<fast_factory<T>>
-    {
-#pragma warning(suppress: 4307)
-        static constexpr guid value{ generate_guid(combine("fast_factory(", to_array<char>(guid_of<T>()), ")")) };
+        static constexpr guid value{ generate_guid(combine("fastabi(", to_array<char>(guid_of<T>()), ")")) };
     };
 
     constexpr size_t to_utf8_size(wchar_t const value) noexcept
@@ -1897,12 +1882,6 @@ namespace winrt::impl
     };
 
     using inspectable_abi = abi_t<Windows::Foundation::IInspectable>;
-
-    template <typename T>
-    struct abi<fast_instance<T>>
-    {
-        using type = inspectable_abi;
-    };
 
     struct WINRT_NOVTABLE IAgileObject : unknown_abi
     {
@@ -7185,15 +7164,6 @@ WINRT_EXPORT namespace winrt::Windows::Foundation::Collections
 
 namespace winrt::impl
 {
-    inline void put_fast_abi(Windows::Foundation::IAsyncAction& object, void* ptr) noexcept
-    {
-        WINRT_ASSERT(!object);
-        *reinterpret_cast<void**>(&object) = ptr;
-    }
-}
-
-namespace winrt::impl
-{
     template <typename D>
     void consume_IAsyncAction<D>::Completed(Windows::Foundation::AsyncActionCompletedHandler const& handler) const
     {
@@ -7508,12 +7478,6 @@ namespace winrt::impl
             }
         }
 
-        template <typename F>
-        auto fast_call(F&& callback)
-        {
-            return callback(*reinterpret_cast<com_ref<Interface> const*>(&m_value.object));
-        }
-
         void lock() noexcept
         {
             {
@@ -7616,30 +7580,6 @@ namespace winrt::impl
         return factory_storage<Class, Interface>::factory.call(callback);
     }
 
-    template <typename Class, typename F>
-    auto fast_call(F&& callback)
-    {
-        return factory_storage<Class, fast_factory<Class>>::factory.fast_call(callback);
-    }
-
-    template <typename Class>
-    void fast_lock(Class const& value) noexcept
-    {
-        if (value)
-        {
-            factory_storage<Class, fast_factory<Class>>::factory.lock();
-        }
-    }
-
-    template <typename Class>
-    void fast_unlock(Class const& value) noexcept
-    {
-        if (value)
-        {
-            factory_storage<Class, fast_factory<Class>>::factory.unlock();
-        }
-    }
-
     template <typename Class, typename Interface = Windows::Foundation::IActivationFactory>
     auto try_get_activation_factory(hresult_error* exception = nullptr) noexcept
     {
@@ -7665,8 +7605,6 @@ namespace winrt::impl
 
 WINRT_EXPORT namespace winrt
 {
-    // TODO: put_abi and friends for fast_instance<T>
-
     namespace Windows::Foundation
     {
         struct IActivationFactory :
@@ -7783,12 +7721,12 @@ namespace winrt::impl
 #ifdef WINRT_WINDOWS_ABI
 
     template <typename T>
-    struct is_interface : std::disjunction<std::is_base_of<Windows::Foundation::IInspectable, T>, is_fast_instance<T>, std::conjunction<std::is_base_of<::IUnknown, T>, std::negation<is_implements<T>>>> {};
+    struct is_interface : std::disjunction<std::is_base_of<Windows::Foundation::IInspectable, T>, is_fast_interface<T>, std::conjunction<std::is_base_of<::IUnknown, T>, std::negation<is_implements<T>>>> {};
 
 #else
 
     template <typename T>
-    struct is_interface : std::disjunction<std::is_base_of<Windows::Foundation::IInspectable, T>, is_fast_instance<T>> {};
+    struct is_interface : std::disjunction<std::is_base_of<Windows::Foundation::IInspectable, T>, is_fast_interface<T>> {};
 
 #endif
 
@@ -8720,7 +8658,7 @@ namespace winrt::impl
             return result;
         }
 
-        using is_factory = std::disjunction<std::disjunction<std::is_same<Windows::Foundation::IActivationFactory, I>, is_fast_factory<I>>...>;
+        using is_factory = std::disjunction<std::is_same<Windows::Foundation::IActivationFactory, I>...>;
 
     private:
 
@@ -8912,11 +8850,6 @@ namespace winrt::impl
             }
         }
     }
-
-    template <typename D, typename C>
-    struct produce<D, fast_instance<C>> : produce_base<D, fast_instance<C>>
-    {
-    };
 }
 
 WINRT_EXPORT namespace winrt
@@ -8926,7 +8859,7 @@ WINRT_EXPORT namespace winrt
     {
         using I = typename impl::implements_default_interface<D>::type;
 
-        if constexpr (std::is_same_v<Windows::Foundation::IActivationFactory, I> || impl::is_fast_factory<I>::value)
+        if constexpr (std::is_same_v<I, Windows::Foundation::IActivationFactory>)
         {
             static_assert(sizeof...(args) == 0);
             return impl::make_factory<D>();
@@ -8941,12 +8874,6 @@ WINRT_EXPORT namespace winrt
         {
             static_assert(std::is_same_v<I, default_interface<typename D::class_type>>);
             typename D::class_type result{ nullptr };
-            *put_abi(result) = to_abi<I>(new D(std::forward<Args>(args)...));
-            return result;
-        }
-        else if constexpr (impl::has_fast_class_type<D>::value)
-        {
-            typename D::fast_class_type result{ nullptr };
             *put_abi(result) = to_abi<I>(new D(std::forward<Args>(args)...));
             return result;
         }

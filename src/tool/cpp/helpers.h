@@ -398,19 +398,15 @@ namespace xlang
 
     struct fast_interface_info
     {
-        uint32_t version{};
         std::string name;
+        uint32_t version{};
         std::pair<MethodDef, MethodDef> methods;
-        bool instance{};
-        bool exclusive{};
-        bool activatable{};
-        bool statics{};
-        bool composable{};
-        bool visible{};
     };
 
     inline auto get_fast_interfaces(writer& w, TypeDef const& type)
     {
+        w.abi_types = false;
+
         auto get_version = [](auto&& type)
         {
             for (auto&& attribute : type.CustomAttribute())
@@ -436,35 +432,17 @@ namespace xlang
 
         std::vector<fast_interface_info> interfaces;
 
-        for (auto&& factory : get_factories(type))
-        {
-            fast_interface_info info;
-            info.activatable = factory.activatable;
-            info.statics = factory.statics;
-            info.composable = factory.composable;
-            info.visible = factory.visible;
-
-            if (factory.type)
-            {
-                info.version = get_version(factory.type);
-                info.methods = factory.type.MethodList();
-
-                info.name = factory.type.TypeNamespace();
-                info.name += '.';
-                info.name += factory.type.TypeName();
-            }
-
-            interfaces.push_back(std::move(info));
-        }
-
         for (auto&&[interface_name, interface_info] : get_interfaces(w, type))
         {
+            if (!interface_info.exclusive)
+            {
+                continue;
+            }
+
             fast_interface_info info;
-            info.version = get_version(interface_info.type);
-            info.name = interface_name;
             info.methods = interface_info.methods;
-            info.instance = true;
-            info.exclusive = interface_info.exclusive;
+            info.name = interface_name;
+            info.version = get_version(interface_info.type);
 
             interfaces.push_back(std::move(info));
         }

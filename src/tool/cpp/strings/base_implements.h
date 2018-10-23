@@ -46,12 +46,12 @@ namespace winrt::impl
 #ifdef WINRT_WINDOWS_ABI
 
     template <typename T>
-    struct is_interface : std::disjunction<std::is_base_of<Windows::Foundation::IInspectable, T>, is_fast_instance<T>, std::conjunction<std::is_base_of<::IUnknown, T>, std::negation<is_implements<T>>>> {};
+    struct is_interface : std::disjunction<std::is_base_of<Windows::Foundation::IInspectable, T>, is_fast_interface<T>, std::conjunction<std::is_base_of<::IUnknown, T>, std::negation<is_implements<T>>>> {};
 
 #else
 
     template <typename T>
-    struct is_interface : std::disjunction<std::is_base_of<Windows::Foundation::IInspectable, T>, is_fast_instance<T>> {};
+    struct is_interface : std::disjunction<std::is_base_of<Windows::Foundation::IInspectable, T>, is_fast_interface<T>> {};
 
 #endif
 
@@ -983,7 +983,7 @@ namespace winrt::impl
             return result;
         }
 
-        using is_factory = std::disjunction<std::disjunction<std::is_same<Windows::Foundation::IActivationFactory, I>, is_fast_factory<I>>...>;
+        using is_factory = std::disjunction<std::is_same<Windows::Foundation::IActivationFactory, I>...>;
 
     private:
 
@@ -1175,11 +1175,6 @@ namespace winrt::impl
             }
         }
     }
-
-    template <typename D, typename C>
-    struct produce<D, fast_instance<C>> : produce_base<D, fast_instance<C>>
-    {
-    };
 }
 
 WINRT_EXPORT namespace winrt
@@ -1189,7 +1184,7 @@ WINRT_EXPORT namespace winrt
     {
         using I = typename impl::implements_default_interface<D>::type;
 
-        if constexpr (std::is_same_v<Windows::Foundation::IActivationFactory, I> || impl::is_fast_factory<I>::value)
+        if constexpr (std::is_same_v<I, Windows::Foundation::IActivationFactory>)
         {
             static_assert(sizeof...(args) == 0);
             return impl::make_factory<D>();
@@ -1204,12 +1199,6 @@ WINRT_EXPORT namespace winrt
         {
             static_assert(std::is_same_v<I, default_interface<typename D::class_type>>);
             typename D::class_type result{ nullptr };
-            *put_abi(result) = to_abi<I>(new D(std::forward<Args>(args)...));
-            return result;
-        }
-        else if constexpr (impl::has_fast_class_type<D>::value)
-        {
-            typename D::fast_class_type result{ nullptr };
             *put_abi(result) = to_abi<I>(new D(std::forward<Args>(args)...));
             return result;
         }

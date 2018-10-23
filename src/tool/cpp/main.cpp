@@ -6,6 +6,7 @@
 #include "helpers.h"
 #include "code_writers.h"
 #include "file_writers.h"
+#include "type_writers.h"
 
 namespace xlang
 {
@@ -242,4 +243,5 @@ namespace xlang
 int main(int const argc, char** argv)
 {
     xlang::run(argc, argv);
+
 }

@@ -33,13 +33,13 @@ namespace winrt::Component::Edge::factory_implementation
         {
             return L"Component.Edge.ZeroClass";
         }
-        void StaticMethod()
-        {
-            return T::StaticMethod();
-        }
         Windows::Foundation::IInspectable ActivateInstance() const
         {
             return make<T>();
+        }
+        void StaticMethod()
+        {
+            return T::StaticMethod();
         }
     };
 }

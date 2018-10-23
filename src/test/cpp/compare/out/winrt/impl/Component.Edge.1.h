@@ -95,6 +95,3 @@ namespace winrt::Component::Edge
         IZeroClassStatics(construct_from_abi_t, void* ptr) noexcept : Windows::Foundation::IInspectable(construct_from_abi, ptr) {}
     };
 }
-namespace winrt
-{
-}

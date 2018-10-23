@@ -3,12 +3,20 @@
 #include "winrt/impl/Component.Fast.1.h"
 namespace winrt::Component::Fast
 {
-    struct WINRT_EBO FastClass :
-            Component::Fast::IFastClass,
-    impl::require<FastClass, Component::Fast::IFastClass2, Component::Fast::INotExclusive>
+    struct WINRT_EBO FastClass : Windows::Foundation::IInspectable,
+        impl::require<FastClass, Component::Fast::INotExclusive>
     {
         FastClass(std::nullptr_t) noexcept {}
-        FastClass(construct_from_abi_t, void* ptr) noexcept : Component::Fast::IFastClass(construct_from_abi, ptr) {}
+        FastClass(construct_from_abi_t, void* ptr) noexcept : Windows::Foundation::IInspectable(construct_from_abi, ptr) {}
         FastClass();
+        static void StaticMethod();
+    };
+    struct WINRT_EBO SlowClass : Component::Fast::ISlowClass,
+        impl::require<SlowClass, Component::Fast::INotExclusive, Component::Fast::ISlowClass2>
+    {
+        SlowClass(std::nullptr_t) noexcept {}
+        SlowClass(construct_from_abi_t, void* ptr) noexcept : Component::Fast::ISlowClass(construct_from_abi, ptr) {}
+        SlowClass();
+        static void StaticMethod();
     };
 }

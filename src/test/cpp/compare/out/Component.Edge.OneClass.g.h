@@ -25,7 +25,7 @@ namespace winrt::Component::Edge::implementation
 namespace winrt::Component::Edge::factory_implementation
 {
     template <typename D, typename T, typename... I>
-    struct WINRT_EBO OneClassT : implements<D, Windows::Foundation::IActivationFactory, Component::Edge::IOneClassFactory, Component::Edge::IOneClassStatics, I...>
+    struct WINRT_EBO OneClassT : implements<D, Windows::Foundation::IActivationFactory, Component::Edge::IOneClassStatics, Component::Edge::IOneClassFactory, I...>
     {
         using instance_type = Component::Edge::OneClass;
 
@@ -33,13 +33,13 @@ namespace winrt::Component::Edge::factory_implementation
         {
             return L"Component.Edge.OneClass";
         }
-        Component::Edge::OneClass CreateInstance(int32_t a)
-        {
-            return make<T>(a);
-        }
         void StaticMethod(int32_t a)
         {
             return T::StaticMethod(a);
+        }
+        Component::Edge::OneClass CreateInstance(int32_t a)
+        {
+            return make<T>(a);
         }
         [[noreturn]] Windows::Foundation::IInspectable ActivateInstance() const
         {

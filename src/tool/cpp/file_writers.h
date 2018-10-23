@@ -95,7 +95,6 @@ namespace xlang
         w.write_each<write_delegate_abi>(members.delegates);
         w.write_each<write_fast_abi>(members.classes);
         w.write_each<write_consume>(members.interfaces);
-        w.write_each<write_fast_consume>(members.classes);
         w.write_each<write_struct_abi>(members.structs);
         write_close_namespace(w);
 
@@ -121,9 +120,6 @@ namespace xlang
 
         write_type_namespace(w, ns);
         w.write_each<write_interface>(members.interfaces);
-        write_close_namespace(w);
-        write_root_namespace(w);
-        w.write_each<write_fast_interface>(members.classes);
         write_close_namespace(w);
 
         w.swap();
@@ -172,10 +168,8 @@ namespace xlang
 
         write_impl_namespace(w);
         w.write_each<write_consume_definitions>(members.interfaces);
-        w.write_each<write_fast_consume_definitions>(members.classes);
         w.write_each<write_delegate_implementation>(members.delegates);
         w.write_each<write_produce>(members.interfaces);
-        w.write_each<write_fast_produce>(members.classes);
         w.write_each<write_dispatch_overridable>(members.classes);
         write_close_namespace(w);
         write_type_namespace(w, ns);
